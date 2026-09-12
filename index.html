@@ -20,7 +20,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Fond animé par défaut (désactivé en mode light) */
+/* Base : Effets complets */
 body:not(.light-mode) {
     background: radial-gradient(circle at 50% 20%, #344d8b 0%, #151b3c 45%, #080b1d 100%);
 }
@@ -44,12 +44,12 @@ body:not(.light-mode) {
     to { transform: translateY(-80px); }
 }
 
-/* Bouton Version Légère */
+/* Bouton Mode Léger & Alerte */
 .mode-toggle {
     position: absolute;
     top: 15px;
     right: 15px;
-    z-index: 10;
+    z-index: 100;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid #ffd75a;
     color: #ffd75a;
@@ -58,12 +58,35 @@ body:not(.light-mode) {
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-    transition: 0.2s;
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
 }
 
 .mode-toggle:hover {
     background: #ffd75a;
     color: #151b3c;
+}
+
+.lag-warning {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4757;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 200;
+    display: none;
+    font-weight: bold;
+    cursor: pointer;
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    from { transform: translate(-50%, 50px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
 }
 
 header {
@@ -76,7 +99,10 @@ h1 {
     font-size: clamp(28px, 6vw, 52px);
     margin: 5px 0;
     color: #ffd75a;
-    text-shadow: 0 0 10px #ffd75a;
+    text-shadow:
+        0 0 5px #fff,
+        0 0 15px #ffd75a,
+        0 0 35px #ff9d00;
 }
 
 body:not(.light-mode) h1 {
@@ -118,8 +144,9 @@ body:not(.light-mode) h1 {
     border-radius: 20px;
     padding: 10px 20px;
     cursor: pointer;
-    transition: .2s;
+    transition: .3s;
     font-size: 20px;
+    backdrop-filter: blur(8px);
 }
 
 .char-btn-img {
@@ -130,14 +157,17 @@ body:not(.light-mode) h1 {
 }
 
 .character:hover {
-    transform: translateY(-3px);
-    background: rgba(255, 215, 90, 0.2);
+    transform: translateY(-5px) scale(1.05);
+    background: rgba(255, 215, 90, 0.15);
     border-color: #ffd75a;
+    box-shadow: 0 0 15px #ffd75a, 0 0 35px rgba(255, 215, 90, 0.3);
 }
 
 .character.selected {
-    background: rgba(255, 215, 90, 0.3);
+    transform: scale(1.08);
+    background: linear-gradient(135deg, rgba(255, 215, 90, 0.2), rgba(125, 92, 255, 0.2));
     border-color: #ffd75a;
+    box-shadow: 0 0 15px #ffd75a, 0 0 40px rgba(125, 92, 255, 0.5);
 }
 
 .scene {
@@ -160,21 +190,57 @@ body:not(.light-mode) .scene {
     box-shadow: 0 10px 40px #0008, inset 0 0 40px #0008;
 }
 
+body:not(.light-mode) .scene::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(141, 122, 255, 0.15), transparent 70%);
+    animation: halo 3s infinite alternate;
+}
+
+@keyframes halo {
+    from { transform: scale(.8); opacity: .4; }
+    to { transform: scale(1.3); opacity: 1; }
+}
+
 .magic-circle {
     position: absolute;
     width: 220px;
     height: 220px;
     border-radius: 50%;
     border: 3px solid #b99cff;
+    box-shadow: 0 0 10px #b99cff, 0 0 30px #7d5cff, inset 0 0 20px #7d5cff;
     opacity: .65;
+    transition: .5s;
+}
+
+.magic-circle::before,
+.magic-circle::after {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 50%;
+    border: 2px dashed #ffd75a;
+}
+
+.magic-circle::after {
+    inset: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .magic-circle.active {
-    animation: magicRotate 2s linear infinite;
+    animation: magicRotate 2s linear infinite, circlePulse .7s infinite alternate;
 }
 
 @keyframes magicRotate {
     to { transform: rotate(360deg); }
+}
+
+@keyframes circlePulse {
+    from { box-shadow: 0 0 10px #b99cff, 0 0 30px #7d5cff; }
+    to { box-shadow: 0 0 25px #fff, 0 0 70px #9b7cff, 0 0 100px #7d5cff; }
 }
 
 .magic {
@@ -183,6 +249,7 @@ body:not(.light-mode) .scene {
     font-size: 24px;
     color: #ffd75a;
     min-height: 35px;
+    text-shadow: 0 0 10px #ffd75a;
 }
 
 .avatar {
@@ -195,6 +262,8 @@ body:not(.light-mode) .scene {
     justify-content: center;
     align-items: center;
     font-size: 95px;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)) drop-shadow(0 0 25px rgba(125,92,255,0.4));
+    transition: .3s;
 }
 
 .avatar-img-container {
@@ -228,11 +297,14 @@ body:not(.light-mode) .avatar.transforming {
 }
 
 @keyframes epicTransformation {
-    0% { transform: scale(1) rotate(0deg); }
-    30% { transform: scale(1.5) rotate(15deg); filter: brightness(2); }
-    50% { transform: scale(0.1) rotate(180deg); opacity: 0; }
-    80% { transform: scale(1.2) rotate(500deg); opacity: 1; }
-    100% { transform: scale(1) rotate(720deg); }
+    0% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 15px #fff); }
+    15% { transform: scale(1.25) rotate(-8deg); filter: brightness(1.8) drop-shadow(0 0 25px #ffd75a); }
+    30% { transform: scale(1.5) rotate(15deg); filter: brightness(3) drop-shadow(0 0 45px #ffe45c); }
+    48% { transform: scale(.15) rotate(180deg); opacity: .2; filter: brightness(5) drop-shadow(0 0 60px white); }
+    62% { transform: scale(.05) rotate(360deg); opacity: 0; }
+    75% { transform: scale(.6) rotate(500deg); opacity: 1; filter: brightness(3) drop-shadow(0 0 50px #8fffa5); }
+    88% { transform: scale(1.25) rotate(700deg); filter: brightness(1.8) drop-shadow(0 0 35px #8fffa5); }
+    100% { transform: scale(1) rotate(720deg); filter: brightness(1) drop-shadow(0 0 20px #8fffa5); }
 }
 
 .insect-name {
@@ -242,11 +314,23 @@ body:not(.light-mode) .avatar.transforming {
     font-weight: bold;
     color: #8fffa5;
     min-height: 45px;
+    text-shadow: 0 0 10px #8fffa5;
+}
+
+.insect-name.pop {
+    animation: namePop .6s ease-out;
+}
+
+@keyframes namePop {
+    0% { transform: scale(.2); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
 }
 
 .question {
     font-size: 22px;
     margin: 15px;
+    text-shadow: 0 0 10px #fff;
 }
 
 .insects {
@@ -258,26 +342,34 @@ body:not(.light-mode) .avatar.transforming {
 }
 
 .insect {
+    position: relative;
     border: none;
     border-radius: 20px;
-    background: #ffffff;
+    background: linear-gradient(145deg, #ffffff, #dce4ff);
     color: #172044;
     padding: 18px 8px;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    transition: .2s;
+    box-shadow: 0 5px 12px #0005;
+    transition: .25s;
+    overflow: hidden;
 }
 
 .insect:hover {
-    transform: translateY(-4px);
-    background: #e8eeff;
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 10px 25px #0008, 0 0 20px #9b8cff;
 }
 
 .insect span {
     display: block;
     font-size: 45px;
     margin-bottom: 7px;
+    transition: .3s;
+}
+
+.insect:hover span {
+    transform: rotate(10deg) scale(1.2);
 }
 
 .message {
@@ -287,12 +379,13 @@ body:not(.light-mode) .avatar.transforming {
     font-weight: bold;
 }
 
-.success { color: #76ff9b; }
+.success { color: #76ff9b; text-shadow: 0 0 10px #76ff9b; }
 
 .score {
     margin-top: 20px;
     font-size: 20px;
     color: #ffd75a;
+    text-shadow: 0 0 10px #ffd75a;
 }
 
 .reset {
@@ -300,37 +393,85 @@ body:not(.light-mode) .avatar.transforming {
     padding: 12px 25px;
     border: none;
     border-radius: 15px;
-    background: #7d5cff;
+    background: linear-gradient(135deg, #7d5cff, #bd65ff);
     color: white;
     font-size: 17px;
     cursor: pointer;
+    box-shadow: 0 5px 20px rgba(125, 92, 255, 0.4);
+    transition: .3s;
 }
 
 .reset:hover {
-    background: #6a49eb;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(189, 101, 255, 0.6);
 }
 
-/* Éléments masqués en mode léger */
+/* Particules / Effets lourds */
+.flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, white 0%, #fff7a0 15%, rgba(157, 124, 255, 0.3) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 50;
+    animation: flash .5s ease-out forwards;
+}
+
+@keyframes flash {
+    0% { opacity: 0; }
+    30% { opacity: .95; }
+    100% { opacity: 0; }
+}
+
+.sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 25px;
+    z-index: 60;
+    animation: sparkleExplosion 1.3s forwards;
+}
+
+@keyframes sparkleExplosion {
+    0% { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(var(--x) * 1px), calc(var(--y) * 1px)) scale(1.8) rotate(360deg); opacity: 0; }
+}
+
+.smoke {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(184,184,255,0.4), transparent);
+    pointer-events: none;
+    z-index: 10;
+    animation: smokeAnimation 1.4s ease-out forwards;
+}
+
+@keyframes smokeAnimation {
+    0% { transform: scale(.3) translateY(0); opacity: .9; }
+    100% { transform: scale(3) translateY(-130px); opacity: 0; }
+}
+
+/* SPECIFIQUE MODE LIGHT (Allégé au maximum) */
 body.light-mode .stars,
 body.light-mode .sparkle,
 body.light-mode .smoke,
-body.light-mode .flash {
+body.light-mode .flash,
+body.light-mode .scene::before {
     display: none !important;
 }
 
-/* Animations réduites pour appareils lents */
-@media (prefers-reduced-motion: reduce) {
-    .stars, .magic-circle, body:not(.light-mode) h1 {
-        animation: none !important;
-    }
+body.light-mode * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
 }
 
-@media(max-width:600px) {
-    .scene { min-height: 330px; }
-    .avatar { width: 100px; height: 100px; font-size: 70px; }
-    .avatar img { width: 85px; height: 85px; }
-    .magic-circle { width: 180px; height: 180px; }
-    .insect-name { font-size: 24px; }
+body.light-mode .magic-circle {
+    box-shadow: none !important;
+}
+
+body.light-mode .insect:hover {
+    transform: none;
 }
 </style>
 </head>
@@ -338,6 +479,7 @@ body.light-mode .flash {
 <body>
 
 <button class="mode-toggle" id="modeBtn" onclick="toggleLightMode()">⚡ Mode Léger : OFF</button>
+<div class="lag-warning" id="lagWarning" onclick="enableLightModeAuto()">🐢 Ralentissement détecté ! Cliquez ici pour passer en Mode Léger</div>
 
 <div class="stars"></div>
 
@@ -396,10 +538,43 @@ let score = 0;
 let transforming = false;
 let isLightMode = false;
 
+// --- DÉTECTEUR DE LENTEUR (FPS) ---
+let lastFrameTime = performance.now();
+let frameCount = 0;
+let lagDetected = false;
+
+function checkPerformance() {
+    const now = performance.now();
+    const delta = now - lastFrameTime;
+    frameCount++;
+
+    if (delta >= 1000) {
+        const fps = (frameCount * 1000) / delta;
+        frameCount = 0;
+        lastFrameTime = now;
+
+        // Si moins de 25 images par seconde et mode normal actif
+        if (fps < 25 && !isLightMode && !lagDetected) {
+            lagDetected = true;
+            document.getElementById("lagWarning").style.display = "block";
+        }
+    }
+    requestAnimationFrame(checkPerformance);
+}
+requestAnimationFrame(checkPerformance);
+
+function enableLightModeAuto() {
+    if (!isLightMode) toggleLightMode();
+    document.getElementById("lagWarning").style.display = "none";
+}
+
 function toggleLightMode() {
     isLightMode = !isLightMode;
     document.body.classList.toggle("light-mode", isLightMode);
-    document.getElementById("modeBtn").textContent = isLightMode ? "⚡ Mode Légère : ON" : "⚡ Mode Léger : OFF";
+    document.getElementById("modeBtn").textContent = isLightMode ? "⚡ Mode Léger : ON" : "⚡ Mode Léger : OFF";
+    if (isLightMode) {
+        document.getElementById("lagWarning").style.display = "none";
+    }
 }
 
 function chooseCharacter(name, imgSrc, element) {
@@ -427,6 +602,7 @@ function transform(insect, emoji) {
     const circle = document.getElementById("magicCircle");
 
     message.textContent = "";
+    message.className = "message";
     magic.textContent = "✨ " + character + " lance le sort : METAMORPHOSIS ! ✨";
 
     circle.classList.add("active");
@@ -434,7 +610,6 @@ function transform(insect, emoji) {
     void avatar.offsetWidth;
     avatar.classList.add("transforming");
 
-    // Génération des effets visuels uniquement si le mode léger est désactivé
     if (!isLightMode) {
         createMagicParticles();
         createSmoke();
@@ -446,6 +621,11 @@ function transform(insect, emoji) {
     setTimeout(() => {
         avatar.textContent = emoji;
         insectName.textContent = character + " s'est transformé(e) en " + insect + " !";
+        
+        insectName.classList.remove("pop");
+        void insectName.offsetWidth;
+        if (!isLightMode) insectName.classList.add("pop");
+
         magic.textContent = "✨ MAGIE RÉUSSIE ! ✨";
         message.textContent = "Bravo ! Quelle incroyable transformation ! 🎉";
         message.className = "message success";
@@ -471,34 +651,49 @@ function createFlash() {
 }
 
 function createMagicParticles() {
-    const symbols = ["✨", "⭐", "💫"];
-    for (let i = 0; i < 15; i++) {
+    const symbols = ["✨", "⭐", "💫", "🔮", "🪄"];
+    for (let i = 0; i < 20; i++) {
         const sparkle = document.createElement("div");
         sparkle.className = "sparkle";
         sparkle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
         const angle = Math.random() * Math.PI * 2;
-        const distance = 100 + Math.random() * 200;
+        const distance = 100 + Math.random() * 280;
         sparkle.style.left = "50%";
         sparkle.style.top = "45%";
         sparkle.style.setProperty("--x", Math.cos(angle) * distance);
         sparkle.style.setProperty("--y", Math.sin(angle) * distance);
         document.body.appendChild(sparkle);
-        setTimeout(() => sparkle.remove(), 1200);
+        setTimeout(() => sparkle.remove(), 1400);
     }
 }
 
 function createExplosion() {
-    createMagicParticles();
+    const symbols = ["✨", "⭐", "💫", "🎉", "🌟", "🪄"];
+    for (let i = 0; i < 35; i++) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        sparkle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 150 + Math.random() * 400;
+        sparkle.style.left = "50%";
+        sparkle.style.top = "45%";
+        sparkle.style.fontSize = (15 + Math.random() * 25) + "px";
+        sparkle.style.setProperty("--x", Math.cos(angle) * distance);
+        sparkle.style.setProperty("--y", Math.sin(angle) * distance);
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1400);
+    }
 }
 
 function createSmoke() {
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 15; i++) {
         const smoke = document.createElement("div");
         smoke.className = "smoke";
         smoke.style.left = (40 + Math.random() * 20) + "%";
         smoke.style.top = (45 + Math.random() * 15) + "%";
+        smoke.style.animationDelay = (Math.random() * .4) + "s";
         document.querySelector(".scene").appendChild(smoke);
-        setTimeout(() => smoke.remove(), 1200);
+        setTimeout(() => smoke.remove(), 1800);
     }
 }
 
@@ -510,9 +705,10 @@ function resetGame() {
     document.getElementById("insectName").textContent = "Prêt pour une nouvelle transformation ?";
     document.getElementById("magic").textContent = "✨ À toi de jouer ! ✨";
     document.getElementById("message").textContent = "";
+    document.getElementById("message").className = "message";
+    document.getElementById("magicCircle").classList.remove("active");
 }
 </script>
 
 </body>
 </html>
- 
