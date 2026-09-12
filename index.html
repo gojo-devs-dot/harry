@@ -93,14 +93,23 @@ h1 {
 }
 
 .character {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     background: #ffffff12;
     border: 2px solid #ffffff30;
     border-radius: 20px;
-    padding: 12px 25px;
+    padding: 10px 20px;
     cursor: pointer;
     transition: .3s;
     font-size: 20px;
     backdrop-filter: blur(8px);
+}
+
+.char-btn-img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
 }
 
 .character:hover {
@@ -233,12 +242,23 @@ h1 {
 .avatar {
     position: relative;
     z-index: 3;
-    font-size: 105px;
+    width: 120px;
+    height: 120px;
     margin: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 105px;
     filter:
         drop-shadow(0 0 15px #fff6)
         drop-shadow(0 0 25px #7d5cff66);
     transition: .3s;
+}
+
+.avatar img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 .avatar.transforming {
@@ -526,6 +546,8 @@ h1 {
     }
 
     .avatar {
+        width: 90px;
+        height: 90px;
         font-size: 80px;
     }
 
@@ -559,23 +581,23 @@ h1 {
 
         <div
             class="character selected"
-            onclick="chooseCharacter('Harry','🧙‍♂️', this)"
+            onclick="chooseCharacter('Harry', 'images/harry.png', this)"
         >
-            🧙‍♂️ Harry
+            <img src="images/harry.png" alt="Harry" class="char-btn-img"> Harry
         </div>
 
         <div
             class="character"
-            onclick="chooseCharacter('Hermione','🧙‍♀️', this)"
+            onclick="chooseCharacter('Hermione', 'images/hermione.png', this)"
         >
-            🧙‍♀️ Hermione
+            <img src="images/hermione.png" alt="Hermione" class="char-btn-img"> Hermione
         </div>
 
         <div
             class="character"
-            onclick="chooseCharacter('Ron','🧙', this)"
+            onclick="chooseCharacter('Ron', 'images/ron.png', this)"
         >
-            🧙 Ron
+            <img src="images/ron.png" alt="Ron" class="char-btn-img"> Ron
         </div>
 
     </div>
@@ -598,7 +620,7 @@ h1 {
             class="avatar"
             id="avatar"
         >
-            🧙‍♂️
+            <img src="images/harry.png" id="avatarImg" alt="Harry">
         </div>
 
         <div
@@ -696,20 +718,20 @@ h1 {
 <script>
 
 let character = "Harry";
-let characterEmoji = "🧙‍♂️";
+let characterImg = "images/harry.png";
 let score = 0;
 let transforming = false;
 
-function chooseCharacter(name, emoji, element) {
+function chooseCharacter(name, imgSrc, element) {
 
     if (transforming) return;
 
     character = name;
-    characterEmoji = emoji;
+    characterImg = imgSrc;
 
     const avatar = document.getElementById("avatar");
 
-    avatar.textContent = emoji;
+    avatar.innerHTML = `<img src="${imgSrc}" id="avatarImg" alt="${name}">`;
 
     document
         .querySelectorAll(".character")
@@ -965,8 +987,8 @@ function resetGame() {
     document.getElementById("score").textContent =
         score;
 
-    document.getElementById("avatar").textContent =
-        characterEmoji;
+    document.getElementById("avatar").innerHTML =
+        `<img src="${characterImg}" id="avatarImg" alt="${character}">`;
 
     document.getElementById("insectName").textContent =
         "Prêt pour une nouvelle transformation ?";
