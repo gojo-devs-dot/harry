@@ -538,9 +538,10 @@ let score = 0;
 let transforming = false;
 let isLightMode = false;
 
-// --- DÉTECTEUR DE LENTEUR (FPS) ---
+// --- DÉTECTEUR DE LENTEUR AMÉLIORÉ ---
 let lastFrameTime = performance.now();
 let frameCount = 0;
+let lowFpsCount = 0; // Compteur de secondes consécutives avec un bas FPS
 let lagDetected = false;
 
 function checkPerformance() {
@@ -553,10 +554,15 @@ function checkPerformance() {
         frameCount = 0;
         lastFrameTime = now;
 
-        // Si moins de 25 images par seconde et mode normal actif
-        if (fps < 25 && !isLightMode && !lagDetected) {
-            lagDetected = true;
-            document.getElementById("lagWarning").style.display = "block";
+        // Vérifie si le FPS reste sous 25 pendant au moins 3 secondes consécutives
+        if (fps < 25 && !isLightMode) {
+            lowFpsCount++;
+            if (lowFpsCount >= 3 && !lagDetected) {
+                lagDetected = true;
+                document.getElementById("lagWarning").style.display = "block";
+            }
+        } else {
+            lowFpsCount = 0; // Réinitialise si la fluidité revient
         }
     }
     requestAnimationFrame(checkPerformance);
